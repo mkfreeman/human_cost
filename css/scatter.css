@@ -1,0 +1,29 @@
+.chart {
+	display:inline-block;
+}
+
+.axis line, .axis path {
+	stroke: #000;
+	fill: none;
+}
+
+.highlighted {
+	stroke:black;
+	stroke-width:20px;
+}
+
+.point {
+	cursor:pointer;
+}
+
+.child {
+	color:'orange'
+}
+
+.male {
+	color:'steelblue'
+}	
+
+.female {
+	color:'green'
+}
