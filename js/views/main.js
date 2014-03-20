@@ -10,8 +10,15 @@ Main.prototype.init = function() {
 	self.preLoad(function() {
 		this.div = d3.select('#' + self.settings.container).append('div').attr('id', self.settings.id)
 	this.title = this.div.append('div').attr('id', self.settings.id + '-title').text('The Price of Human Life')
+	this.subTitle = this.div.append('div').attr('id', self.settings.id + '-subttitle').text('{click spacebar to advance}')
+	$(window).keypress(function(e) {
+	  if (e.keyCode == 32) {
+		if(self.settings.state > 0) { self.updateCharts()}
+		else {self.build()}
+	  }
+	});
 
-		setTimeout(function(){self.build()}, 1000)
+		// setTimeout(function(){self.build()}, 0)
 // 	self.build()
 	})
 
@@ -30,7 +37,6 @@ Main.prototype.preLoad = function(callback) {
 
 Main.prototype.build = function() {
 	var self = this
-	
 	self.settings.chartNames.map(function(chart, index) {
 		self.prepData(chart)
 		settings[self.settings.id][chart].container = self.settings.id
@@ -44,14 +50,35 @@ Main.prototype.build = function() {
 		}
 	})
 	self.settings.state += 1
-// 	self.buildControls()
-// 	self.listen()
-
+	$('#main-subttitle').fadeOut(500)
 }
 
 Main.prototype.prepData = function(chart) {
 	var self = this
 	switch(self.settings.state) {
+	// 	case 1000000:
+// 			settings[self.settings.id][chart].data = []
+// 			settings[self.settings.id][chart].imageData = []
+// 			settings[self.settings.id][chart].limits = {
+// 				min:{
+// 					x:-550, 
+// 					y:0
+// 				}, 
+// 				max: {
+// 					x:2014, 
+// 					y:Math.log(150000)
+// 				}
+// 			}
+// 			settings[self.settings.id][chart].xVisibility = 'hidden'						
+// 			settings[self.settings.id][chart].yVisibility = 'hidden'						
+// 			settings[self.settings.id][chart].pointVisibility = 'visible'						
+// 			settings[self.settings.id][chart].imgVisibility = 'visible'						
+// 			settings[self.settings.id][chart].textVisibility = 'visible'		
+// 			settings[self.settings.id][chart].yAxisRange = [0,0] 				
+// 			settings[self.settings.id][chart].xAxisRange = [0,0] 	
+// 			settings[self.settings.id][chart].textData = [{id:'intro', text:'{click spacebar to continue}', x:500, y:8}]
+// 			
+// 			break
 		case 0:
 			// data prep
 			settings[self.settings.id][chart].data = []
@@ -93,7 +120,8 @@ Main.prototype.prepData = function(chart) {
 			settings[self.settings.id][chart].imgVisibility = 'visible'						
 			settings[self.settings.id][chart].textVisibility = 'visible'		
 			settings[self.settings.id][chart].yAxisRange = [0,0] 				
-			settings[self.settings.id][chart].xAxisRange = [0,0] 				
+			settings[self.settings.id][chart].xAxisRange = [0,0] 	
+// 			settings[self.settings.id][chart].textData = [{id:'intro', text:'{click spacebar to continue}', x:500, y:8}]			
 			break
 		case 1:
 			// data prep
@@ -214,7 +242,7 @@ Main.prototype.prepData = function(chart) {
 				settings[self.settings.id][chart].data.push({id:d.id,  date:d.date,icon:d.icon, x:x, y:y, detail:detail})
 			})
 			settings[self.settings.id][chart].textData[1].icon = 'baby'
-			settings[self.settings.id][chart].textData[1].text = 'and babies:'
+			settings[self.settings.id][chart].textData[1].text = 'and infants:'
 			settings[self.settings.id][chart].imageData[0].href = 'img/baby.png'
 
 			break
@@ -241,29 +269,45 @@ Main.prototype.prepData = function(chart) {
 			settings[self.settings.id][chart].textData[0].text ='Many of these cases have been uncovered in the past 10 years'
 			break
 		case 12: 
-			settings[self.settings.id][chart].textData = []
+			settings[self.settings.id][chart].textData[0].text = ''
 			settings[self.settings.id][chart].limits.min.x = 2003
+			break
+		case 13: 
+			// change text here, call mouseenter/mouseleave to show hover
+			settings[self.settings.id][chart].textData = [{id:'hover', text:'Hover over a circle to see more details ->', x:2004.5, y:8.5}]			
+			setTimeout(function() {console.log('show poshy'); $('#id_44').poshytip('show')}, 2000)
+			
+// 			setTimeout(function() {$('#id_44').poshytip('hide')}, 2000)
+			settings[self.settings.id][chart].limits.min.x = 2003
+			break
+		case 14: 
+			settings[self.settings.id][chart].textData[0].text ='Or click it to link to the original article'
+			break
+		case 15: 
+				d3.select('#scatter').transition().duration(500).style('opacity', '0').each('end', function() {
+					d3.select('#scatter').style('display', 'none')
+					$('#main-subttitle').css('margin-top', '300px')
+					$('#main-subttitle').text('Sadly, these are only a handful of cases.').fadeIn(700)
+			})
+			break
+		case 16: 
+			d3.select('#main-subttitle').transition().duration(500).style('margin-top', '20px').each('end', function() {
+				d3.select('#main-subttitle').text('In 2011, nearly 5,500 human trafficking cases were detected')
+			})		
 			break
 	}	
 }
 
-Main.prototype.update = function() {
-	var self = this
-	switch(self.settings.state) {
-		case 0:
-			break
-		case 1:
-			break
-	
-	}
-}
+
 
 Main.prototype.updateCharts = function(control) {
 	var self = this
 	self.requests = []
 
 	// push in data requests
-	
+	if(self.settings.state == 16) {
+		self.charts[1] = new Map(settings[self.settings.id]['map'])
+	}
 	
 	$.when.apply($, self.requests).done(function(){
 		self.charts.map(function(d) {

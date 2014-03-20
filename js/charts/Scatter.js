@@ -144,9 +144,9 @@ Scatter.prototype.build = function() {
 	if(self.settings.poshy != 'none') { 
 		self.poshy()
 	}
-	$('#scatter-svg').click(function() {
-		app.view.updateCharts()
-	})
+// 	$('#scatter-svg').click(function() {
+// 		app.view.updateCharts()
+// 	})
 }
 
 Scatter.prototype.draw = function() {
