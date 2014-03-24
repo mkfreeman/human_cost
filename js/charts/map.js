@@ -5,7 +5,7 @@ function Map(sets){
 	
 	self.colors = {};
 	self.colors.positive = $.extend([], colors);
-	self.colors.negative = $.extend([], colors);
+	self.colors.negative = $.extend([], colors).reverse();
 	
 	self.data = self.settings.data == undefined ? {}: self.settings.data;
 	self.getSizes()
@@ -45,9 +45,11 @@ Map.prototype.defineFunctions = function() {
 			})
 			.attr(self.settings.id + '-id', function(d) {return d.properties.location_id})
 			.attr('cx', function(d){
-				return self.legend_scales(self.data[d.properties.location_id].mean)
+				return self.legend_scales(self.data[d.properties.location_id].value.mean)
 			})
 			.style('fill-opacity', .3)
+			.style('stroke-width', '1px')
+			.style('stroke', 'white')
 			.attr('fill', function(d) {return d.color})
 			.attr(self.settings.id + '-density-id', function(d) {return d.properties.location_id})
 			.attr('cy', self.settings.density.height/2)
@@ -59,7 +61,7 @@ Map.prototype.setScales = function() {
 	self.settings.scaleDirection = self.settings.getScaleDirection(self.settings)
 	if(self.settings.locked != true) {
 		var values = self.settings.shape.features.map(function(d) {
-			if(isDefined(false, self.data, d.properties.location_id)) return self.data[d.properties.location_id].mean
+			if(isDefined(false, self.data, d.properties.location_id)) return Number(self.data[d.properties.location_id].value.mean)
 		})
 		// self.settings.min = d3.min(values) - (d3.max(values)- d3.min(values))/100
 		self.settings.min = d3.min(values)
@@ -170,10 +172,10 @@ Map.prototype.build = function(){
 		.attr("d", self.path)
 		
 
-	self.makeDensity()
-	self.drawDensity()
+// 	self.makeDensity()
+// 	self.drawDensity()
 	self.poshy()
-	self.makeLegend()
+// 	self.makeLegend()
 	self.update(true, true);
 	$('.path').mouseenter(function() {
 		if($(this).attr(self.settings.id + '-id')!= self.settings.location_id) {
@@ -377,31 +379,32 @@ Map.prototype.gray = function() {
 
 Map.prototype.update = function(control, build){
 	var self = this;
+	
 	if(control == 'zoom') {
 		// get highlighted path to change on density plot and map
 		self.zoom('to', self.settings.location_id)
 		return
 	
 	}
-	console.log('set title as ', self.settings.title, self, control, build)
 	var build = build == undefined? false: build
 	var control = control == undefined ? true: control
 	d3.select('#' + self.settings.id + '-titletext').text(self.settings.title)
 	self.data = self.settings.data == undefined ? {}: self.settings.data;
+	self.getSizes()
 	self.setScales()
 	var scaleChange = (control.id == 'measure' | control == 'display' | control.id == 'metric' | control.id == 'locked' | control == true | control == 'play' | (self.settings.locked == false & (control.id == 'year' | control.id == 'year' | control.id == 'item' | control.id == 'type' | control.id == 'sex' | control.id == 'race' | control == 'chart1'))) ? true : false
 	if(scaleChange == true & (build == false)) self.settings.limits = [self.settings.min, self.settings.max]
 	self.settings.limits = self.settings.limits == undefined ? [self.settings.min, self.settings.max] : self.settings.limits
 	
 	// update axis
-	self.legend_axes = d3.svg.axis()
-		.scale(self.legend_scales)
-		.ticks(5)
-		.tickFormat(isDefined(false, self.settings, 'formatter', 'y') 
-		? self.settings.formatter.y :null)
-		.orient('top')
-	
-	self.legend_labels.transition().duration(500).call(self.legend_axes);
+// 	self.legend_axes = d3.svg.axis()
+// 		.scale(self.legend_scales)
+// 		.ticks(5)
+// 		.tickFormat(isDefined(false, self.settings, 'formatter', 'y') 
+// 		? self.settings.formatter.y :null)
+// 		.orient('top')
+// 	
+// 	self.legend_labels.transition().duration(500).call(self.legend_axes);
 
 	 $.extend([],self.colors[self.settings.scaleDirection]).forEach(function(d,i){
 			d3.select('#stop-color-' + i).transition().duration(500)
@@ -411,9 +414,9 @@ Map.prototype.update = function(control, build){
 	// Transition path fills
 	self.paths
 		.datum(function(d){ 
-			d.value = self.data[d.properties.location_id]
+			d.value = self.data[d.properties.location_id] == undefined ? undefined : self.data[d.properties.location_id].value
 			d.year = (typeof d.value != 'undefined') ? self.data[d.properties.location_id].year : 'missing'
-			d.color = ((typeof d.value != 'undefined') ? self.colorize(d.value.mean) : '#f6f6f6');
+			d.color = ((typeof d.value != 'undefined') ? self.colorize(Number(d.value.mean)) : '#f6f6f6');
 			return d; 
 		})
 		.attr('class', function(d) {
@@ -435,9 +438,9 @@ Map.prototype.update = function(control, build){
 	d3.selectAll('.gray').attr('fill', function(d) { return d.color})	
 	
 	// Update density plot
-	self.density.transition().duration(500).attr("width", self.settings.legend.width + self.settings.legend.shift + 14)
+// 	self.density.transition().duration(500).attr("width", self.settings.legend.width + self.settings.legend.shift + 14)
 	
-	self.drawDensity()
+// 	self.drawDensity()
 	
 	
 		
@@ -447,12 +450,15 @@ Map.prototype.update = function(control, build){
 	$('.path').css("stroke-width", (self.settings.stroke.county/self.zoomed.scale()))
 	if(build != true & (control=='chart2' | control.id=='location_id' | control=='state' | control== 'map')) self.zoom('to', self.settings.location_id)
 	else $('[' + self.settings.id + '-id~="' + self.settings.location_id + '"]').css("stroke-width", (10*self.settings.stroke.county/self.zoomed.scale()));
-	self.updateLegend()
+//	self.updateLegend()
 	if(build != true) self.setSliders()
 	$('[' + self.settings.id + '-density-id~="' + self.settings.location_id + '"]').css("stroke-width",'3px');
 	$('[' + self.settings.id + '-density-id~="' + self.settings.location_id + '"]').css("stroke",'black');
 	// self.gray()
-
+// 	self.resize()
+	d3.select('#' + self.settings.id + '-svg').transition().duration(2000)
+				.style('width', self.settings.width+ 'px')
+				.style('height', self.settings.height + 'px')
 }
 
 Map.prototype.zoom = function(direction, loc_id){
@@ -574,7 +580,7 @@ Map.prototype.poshy = function() {
 		hideTimeout: 0, 
 		alignX: 'center', 
 		alignY: 'inner-bottom', 
-		className: 'tip-ihme',
+		className: 'tip',
 		offsetY: 10,
 		content: function(a,tip){
 			var d = this.__data__

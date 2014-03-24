@@ -6,7 +6,9 @@ body {
 }
 
 #main-title {
-	font:33px sans-serif;
+	font-family:verdana;
+	font-weight:bold;
+	font-size:33px;
 }
 
 #header-text {
@@ -58,10 +60,28 @@ body {
 	height:750px;
 }
 
-
-
-#top-right {
+#main-controls {
 	position:absolute;
-	top:10px;
-	right:10px;
+	text-align:center;
+	width:100%;
+	font-size:30px;
+}
+
+.icon-left-open, .icon-right-open, .icon-play, .icon-pause {
+	cursor:pointer;
+}
+
+#main-images {
+	position:absolute;
+	width: 100%;
+	text-align: center;
+}
+
+#map-svg {
+	
+}
+.icon-img:hover {
+	opacity:1 !important;
+	border:2px solid !important;
+	border-color:white;
 }

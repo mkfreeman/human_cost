@@ -22,10 +22,7 @@ body {
 	font-size: 11px;
 }
 
-a:link, .all-link:link, a:visited, .all-link:visited, a:hover, .all-link:hover, a:active, .all-link:active, a, .all-link {
-	text-decoration: none;
-	color: #338f2f;
-}
+
 
 #ihme {
 	position:absolute;
@@ -97,7 +94,7 @@ text {
 	bottom:0px;
 	border-top:solid #d3d3d3 1px;
 	text-align:center;
-	background:white;
+	background:black;
 }
 
 #bottom .control-container {

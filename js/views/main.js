@@ -8,18 +8,15 @@ var Main = function(sets) {
 Main.prototype.init = function() {
 	var self = this
 	self.preLoad(function() {
-		this.div = d3.select('#' + self.settings.container).append('div').attr('id', self.settings.id)
-	this.title = this.div.append('div').attr('id', self.settings.id + '-title').text('The Price of Human Life')
-	this.subTitle = this.div.append('div').attr('id', self.settings.id + '-subttitle').text('{click spacebar to advance}')
-	$(window).keypress(function(e) {
-	  if (e.keyCode == 32) {
-		if(self.settings.state > 0) { self.updateCharts()}
-		else {self.build()}
-	  }
-	});
-
-		// setTimeout(function(){self.build()}, 0)
-// 	self.build()
+// 		this.div = d3.select('#' + self.settings.container).append('div').attr('id', self.settings.id)
+// 		this.title = this.div.append('div').attr('id', self.settings.id + '-title').text('The Pri\&#162e of Human Life')
+		this.subtitle = d3.select('#' + self.settings.id).append('div').attr('id', self.settings.id + '-subtitle').text('')
+		$(window).keypress(function(e) {
+		  if (e.keyCode == 32) {
+			self.updateCharts()
+		  }
+		});
+		self.buildControls()
 	})
 
 }
@@ -30,12 +27,16 @@ Main.prototype.preLoad = function(callback) {
 	// add data loading requests here
 	d3.csv('data/data.csv', function(data, error) {
 		self.data = data
-		callback();
+		d3.csv('data/map_data.csv', function(mapData, error) {
+			self.map_data = mapData
+			callback();
+		})
 
 	})
 } 
 
-Main.prototype.build = function() {
+Main.prototype.build = function() {	
+	console.log('build')
 	var self = this
 	self.settings.chartNames.map(function(chart, index) {
 		self.prepData(chart)
@@ -46,39 +47,31 @@ Main.prototype.build = function() {
 				self.charts[index] = new Scatter(settings[self.settings.id][chart])
 				break
 			case 'chart':
-				self.charts[index] = new Chart(settings[self.settings.id][chart])
+				// self.charts[index] = new Chart(settings[self.settings.id][chart])
 		}
 	})
-	self.settings.state += 1
-	$('#main-subttitle').fadeOut(500)
+
+	self.settings.built = true
+
+}
+
+Main.prototype.prepMapData = function() {
+	var self = this
+	settings[self.settings.id].map.data = {}
+	self.map_data.map(function(d) {
+		var value = {}
+		if(Number(d[self.settings.metric]) ==0) return 
+		value.mean = Math.log(d[self.settings.metric])
+		value.name = d.countryname
+		settings[self.settings.id].map.data[d.location_id] = {value:value}
+	})
+
 }
 
 Main.prototype.prepData = function(chart) {
 	var self = this
+	self.prepMapData()
 	switch(self.settings.state) {
-	// 	case 1000000:
-// 			settings[self.settings.id][chart].data = []
-// 			settings[self.settings.id][chart].imageData = []
-// 			settings[self.settings.id][chart].limits = {
-// 				min:{
-// 					x:-550, 
-// 					y:0
-// 				}, 
-// 				max: {
-// 					x:2014, 
-// 					y:Math.log(150000)
-// 				}
-// 			}
-// 			settings[self.settings.id][chart].xVisibility = 'hidden'						
-// 			settings[self.settings.id][chart].yVisibility = 'hidden'						
-// 			settings[self.settings.id][chart].pointVisibility = 'visible'						
-// 			settings[self.settings.id][chart].imgVisibility = 'visible'						
-// 			settings[self.settings.id][chart].textVisibility = 'visible'		
-// 			settings[self.settings.id][chart].yAxisRange = [0,0] 				
-// 			settings[self.settings.id][chart].xAxisRange = [0,0] 	
-// 			settings[self.settings.id][chart].textData = [{id:'intro', text:'{click spacebar to continue}', x:500, y:8}]
-// 			
-// 			break
 		case 0:
 			// data prep
 			settings[self.settings.id][chart].data = []
@@ -90,7 +83,6 @@ Main.prototype.prepData = function(chart) {
 					var x = -500
 					var y = 10.5
 					var detail = d.detail
-// 					settings[self.settings.id][chart].data.push({id:d.id, x:x, y:y, detail:detail})
 					var img = {id:d.id, 
 						x:x, 
 						y:y, 
@@ -115,7 +107,11 @@ Main.prototype.prepData = function(chart) {
 				}
 			}
 			settings[self.settings.id][chart].xVisibility = 'hidden'						
+			settings[self.settings.id][chart].xTitleVisibility = 'hidden'						
+			settings[self.settings.id][chart].imageFade = true						
+			settings[self.settings.id][chart].textFade = true						
 			settings[self.settings.id][chart].yVisibility = 'hidden'						
+			settings[self.settings.id][chart].yTitleVisibility = 'hidden'						
 			settings[self.settings.id][chart].pointVisibility = 'visible'						
 			settings[self.settings.id][chart].imgVisibility = 'visible'						
 			settings[self.settings.id][chart].textVisibility = 'visible'		
@@ -175,12 +171,12 @@ Main.prototype.prepData = function(chart) {
 				}
 			})
 			settings[self.settings.id][chart].yAxisRange = [0,settings[self.settings.id].scatter.height] 
-			settings[self.settings.id][chart].yVisibility = 'visible'						
+			settings[self.settings.id][chart].yVisibility = 'visible'		
+			settings[self.settings.id][chart].yTitleVisibility = 'visible'						
+				
 			break
+
 		case 3:
-			settings[self.settings.id][chart].textData = []		
-			break
-		case 4:
 			settings[self.settings.id][chart].data = []
 			settings[self.settings.id][chart].textData = []
 			settings[self.settings.id][chart].imageData = []
@@ -189,13 +185,14 @@ Main.prototype.prepData = function(chart) {
 					var x = -300
 					var y =5
 					var detail = d.detail 
-					settings[self.settings.id][chart].textData.push({id:d.id, x:x, y:y, detail:detail, text:'This price of life varies greatly for'})
+					settings[self.settings.id][chart].textFade = false
+					settings[self.settings.id][chart].textData.push({id:d.id + 'a', x:x, y:y, detail:detail, text:'This price of life varies greatly for'})
 					settings[self.settings.id][chart].textData.push({id:'male', icon:d.icon, x:500, y:y, colorize:true, detail:detail, text:'males:'})
 					settings[self.settings.id][chart].imageData.push({id:d.id, x:850, y:y, detail:detail, text:'There are many more examples of <b>male</b>',height:self.settings.imgHeight, width:self.settings.imgWidth, href:'img/' + d.icon + '.png'})
 				}
 			})
 			break
-		case 5:
+		case 4:
 			settings[self.settings.id][chart].data = []
 			self.data.filter(function(d) {return d.icon == 'male'}).map(function(d,i) {
 				var x = -400
@@ -206,7 +203,7 @@ Main.prototype.prepData = function(chart) {
 			settings[self.settings.id][chart].pointVisibility = 'visible'						
 
 			break
-		case 6:
+		case 5:
 			settings[self.settings.id][chart].data = []
 			self.data.filter(function(d) {return d.icon == 'male' | d.icon == 'female'}).map(function(d,i) {
 				var x = -400
@@ -216,11 +213,12 @@ Main.prototype.prepData = function(chart) {
 			})
 			
 			settings[self.settings.id][chart].textData[0].text = ''
+			settings[self.settings.id][chart].imageData[0].id = 'female'
 			settings[self.settings.id][chart].textData[1].icon = 'female'
 			settings[self.settings.id][chart].textData[1].text = 'females:'
 			settings[self.settings.id][chart].imageData[0].href = 'img/female.png'
 			break
-		case 7:
+		case 6:
 			settings[self.settings.id][chart].data = []
 			self.data.filter(function(d) {return d.icon == 'male' | d.icon == 'female' | d.icon == 'child'}).map(function(d,i) {
 				var x = -400
@@ -231,9 +229,11 @@ Main.prototype.prepData = function(chart) {
 			settings[self.settings.id][chart].textData[1].icon = 'child'
 			settings[self.settings.id][chart].textData[1].text = 'children:'
 			settings[self.settings.id][chart].imageData[0].href = 'img/child.png'
+			settings[self.settings.id][chart].imageData[0].id = 'child'
+
 
 			break
-		case 8:
+		case 7:
 			settings[self.settings.id][chart].data = []
 			self.data.filter(function(d) {return d.icon == 'male' | d.icon == 'female' | d.icon == 'child' | d.icon == 'baby'}).map(function(d,i) {
 				var x = -400
@@ -246,12 +246,12 @@ Main.prototype.prepData = function(chart) {
 			settings[self.settings.id][chart].imageData[0].href = 'img/baby.png'
 
 			break
-		case 9:
+		case 8:
 			settings[self.settings.id][chart].textData[0].text = 'These costs have been collected (and estimated) over time'
 			settings[self.settings.id][chart].textData[1].text = ''
 			settings[self.settings.id][chart].imageData = []
 			break
-		case 10:
+		case 9:
 			settings[self.settings.id][chart].xAxisRange = [0,settings[self.settings.id].scatter.width] 				
 			settings[self.settings.id][chart].data = []
 			settings[self.settings.id][chart].imageData = []
@@ -264,63 +264,158 @@ Main.prototype.prepData = function(chart) {
 			})
 			settings[self.settings.id][chart].move = true
 			settings[self.settings.id][chart].xVisibility = 'visible'
+			settings[self.settings.id][chart].xTitleVisibility = 'visible'						
+
 			break
-		case 11:
+		case 10:
 			settings[self.settings.id][chart].textData[0].text ='Many of these cases have been uncovered in the past 10 years'
 			break
-		case 12: 
+		case 11: 
 			settings[self.settings.id][chart].textData[0].text = ''
 			settings[self.settings.id][chart].limits.min.x = 2003
 			break
-		case 13: 
+		case 12: 
 			// change text here, call mouseenter/mouseleave to show hover
 			settings[self.settings.id][chart].textData = [{id:'hover', text:'Hover over a circle to see more details ->', x:2004.5, y:8.5}]			
 			setTimeout(function() {console.log('show poshy'); $('#id_44').poshytip('show')}, 2000)
 			
-// 			setTimeout(function() {$('#id_44').poshytip('hide')}, 2000)
 			settings[self.settings.id][chart].limits.min.x = 2003
 			break
-		case 14: 
+		case 13: 
 			settings[self.settings.id][chart].textData[0].text ='Or click it to link to the original article'
 			break
-		case 15: 
-				d3.select('#scatter').transition().duration(500).style('opacity', '0').each('end', function() {
-					d3.select('#scatter').style('display', 'none')
-					$('#main-subttitle').css('margin-top', '300px')
-					$('#main-subttitle').text('Sadly, these are only a handful of cases.').fadeIn(700)
-			})
+		case 14:
+			settings[self.settings.id][chart].textData = []
+			settings[self.settings.id][chart].height = 100
+			settings[self.settings.id][chart].width = 100 
+			settings[self.settings.id][chart].radius = 3 
+			settings[self.settings.id][chart].showTicks = false 
+			settings[self.settings.id][chart].yAxisRange = [0,100] 
+			settings[self.settings.id][chart].xAxisRange = [0,100] 
+			settings[self.settings.id][chart].xTitleVisibility = 'hidden'						
+			settings[self.settings.id][chart].yTitleVisibility = 'hidden'						
+
+				// d3.select('#scatter').transition().duration(500).style('opacity', '0').each('end', function() {
+				$('#main-subtitle').hide()
+				$('#main-subtitle').css('position', 'absolute').css('width', '100%')
+				$('#main-subtitle').css('top', '40%')
+				$('#main-subtitle').text('These are only a handful of cases.').fadeIn(2000)
+				d3.select('#scatter-g').transition().duration(2000).attr('transform', 'translate(10,10)')
+				d3.select('#scatter-svg').transition().duration(2000).attr('height', 150)
+			// })
 			break
-		case 16: 
-			d3.select('#main-subttitle').transition().duration(500).style('margin-top', '20px').each('end', function() {
-				d3.select('#main-subttitle').text('In 2011, nearly 5,500 human trafficking cases were detected')
-			})		
+		case 15: 
+		$('#main-subtitle').fadeOut(500,function() {
+			self.charts[1] = new Map(settings[self.settings.id]['map'])
+		})
+		// 	d3.select('#main-subtitle').transition().duration(500).style('margin-top', '20px').each('end', function() {
+// 				d3.select('#main-subtitle').text('In 2011, nearly 5,500 human trafficking cases were detected globally')
+// 			})		
+			break
+		case 16:
+			settings[self.settings.id]['map'].getHeight = function() {return 200}
+			settings[self.settings.id]['map'].getWidth = function() {return 200}
 			break
 	}	
 }
 
 
-
-Main.prototype.updateCharts = function(control) {
+Main.prototype.buildControls = function() {
 	var self = this
+	var top = ($(window).height() - $('#main-title').height())/2
+	self.controlsContainer = d3.select('#' + self.settings.id).append('div').attr('id', self.settings.id + '-controls').style('top', top + 'px')
+	self.back = self.controlsContainer.append('i').attr('class', 'icon-left-open').on('click', function() {
+		self.updateCharts(-1)
+	})	
+	self.play = self.controlsContainer.append('i').attr('class', 'icon-play').on('click', function() {
+		if(self.timer != undefined) {
+			self.stop = true
+			self.timer = undefined
+		}
+		else {
+			d3.select(this).attr('class', 'icon-pause')
+			self.playFunction()
+			self.timer = {}
+		}
+	})
+	self.forward = self.controlsContainer.append('i').attr('class', 'icon-right-open').on('click', function() {
+		self.updateCharts(1)
+	})	
+	
+	// d3.select('#' + self.settings.id).append('div').attr('id', self.settings.id + '-images').style('top', top + 'px')
+// 	var mapImg = $('#' + self.settings.id + '-images').append('<image src="img/map.png" class="icon-img" id="map-img"></image>')
+// 	$('#map-img').css('opacity', .5).css('width', '300px')
+// 	var scatterImg = $('#' + self.settings.id  + '-images').append('<image src="img/scatter.png" class="icon-img"  id="scatter-img"></image>')
+// 	$('#scatter-img').css('opacity', .5).css('width', '300px').css('height', '121px')
+	
+
+
+
+	self.settings.controlPosition = 'center'
+}
+
+
+Main.prototype.updateCharts = function(num, double) {
+	var self = this
+	self.moveControls()
+	var num = num == undefined? 1 : num
+	if(self.settings.built != true) { self.build();return}
+	console.log('in controls CURRENT state ', self.settings.state)
+
+	self.settings.state += num
+
 	self.requests = []
 
 	// push in data requests
-	if(self.settings.state == 16) {
-		self.charts[1] = new Map(settings[self.settings.id]['map'])
-	}
-	
+// 	if(self.settings.state == 16) {
+// 	}
+// 	
 	$.when.apply($, self.requests).done(function(){
 		self.charts.map(function(d) {
 			self.prepData(d.settings.id)
 			if(typeof(d.update) == 'function') { 
-				d.update(control)
+				d.update()
 			}
 		})
-		self.settings.state +=1
+		
 	});
+// 	if(self.settings.state == 2 && self.timer == undefined) {
+// 		setTimeout(function() {self.updateCharts(1)}, 0)	
+// 	}
+// 	if(self.settings.state == 3 && self.timer == undefined) {
+// 		setTimeout(function() {self.updateCharts(1)}, 2000)	
+// 	}
 	
+	if((self.settings.state == 8  | self.settings.state == 10) && self.timer == undefined) {
+		setTimeout(function() {self.updateCharts(1)}, 1500)	
+	}
+
 }
 	
-	
+Main.prototype.moveControls = function() {
+	var self = this
+	var top = $(window).height() - 100
+	if(self.settings.controlPosition == 'bottom') return
+	self.controlsContainer.transition().duration(2000).style("top", top + 'px').style('font-size', '20px')
+	self.settings.controlPosition = 'bottom'
+}
+
+Main.prototype.playFunction = function() {
+	var self = this
+	if(self.stop == true) {
+		self.play.attr('class', 'icon-play')
+		self.stop = false
+		return
+	}
+	var delay = self.settings.delays[self.settings.state] == undefined? 4000 : self.settings.delays[self.settings.state]
+	if(self.settings.built != true) delay = 0
+	console.log('delay is ', delay)
+	setTimeout(function() {
+		if(self.settings.state >= self.settings.steps) return
+// 		if(self.settings.state >= 2) return
+		self.updateCharts()
+		self.playFunction()
+	}, delay)
+}
 
 

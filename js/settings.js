@@ -12,11 +12,16 @@ var defaults = {
 		container:'container',
 		chartNames:['scatter'],
 		state:0,
+		steps:17,
+		metric:'destination',
 		text:{
 			labels:{
 				30:'The compensation for a US Military death is $100,000', 	
-				52:'Human trafficing sells children for as little as $2', 	
+				52:'Human trafficking sells children for as little as $2', 	
 			},
+		},
+		delays:{	
+			1:6000,
 		},
 		imgHeight:150, 
 		imgWidth:150,
@@ -65,6 +70,7 @@ var defaults = {
 				right:0,
 			
 			},
+			title:'In 2011, nearly 5,500 human trafficking cases were detected globally',
 			location_id:102,
 			getProjection:function(controller) {
 				var self = controller
@@ -84,7 +90,7 @@ var defaults = {
 			colorClass: 'Reds',
 			colorSteps: 7,
 			getScaleDirection: function() {
-				var dir = 'positive'
+				var dir = 'negative'
 				return dir
 			},
 			formatter:{
@@ -110,22 +116,10 @@ var defaults = {
 				height:40,
 			},
 			tipContent:function(a) {
-				var text = ''
-				var self = this
-				var year = a.year
-				var loc = settings.locationsMap[a.properties.location_id]
-				var measure = app.view.settings.measureMap[app.view.settings.measure]
-				var type = settings.names[app.view.settings.type] == undefined ? 'Average' : settings.names[app.view.settings.type]
-				text += '<b>' + loc + '</b><br/>'
-				if(a.value == undefined) {
-					text += 'No ' + type + ' data'
-				}
-				else {
-					var value = this.formatter.y(a.value.mean)
-					text += '<b>' + measure + ': </b>' + value +  '<br/>'
-					text += app.view.settings.measure == 'missing' ? '' : '<b>Year: </b> ' + year + '<br/>'
-					text += app.view.settings.measure == 'missing' ? '' :'<b>Typology: </b> ' + type + '<br/>'
-				}
+				console.log(a)
+				if(a.value == undefined) return 'No data'
+				var text = a.value.name + '<br/>'
+				text += Math.round(Math.pow(Math.E, a.value.mean)) + ' cases'
 				return text
 			}, 
 		},

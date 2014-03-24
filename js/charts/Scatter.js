@@ -44,9 +44,6 @@ Scatter.prototype.setScales = function() {
 			return self.settings.colors(d.icon)
 		})
 		.attr('id', function(d) {return 'id_' + d.id})
-	// 	.on('click', function(d) {
-// 			console.log('clicked ', d)
-// 		})
 		.style('opacity', function() {return self.settings.move == true ? self.settings.opacity : 0})
 		
 	}
@@ -54,6 +51,7 @@ Scatter.prototype.setScales = function() {
 		.scale(self.xAxisScale)
 		.orient("bottom")
 		.tickFormat(function(d) {
+			if (self.settings.showTicks == false) return ''
 			var formatter = d3.format('.0s')
 			var txt = d < 0 ? String(d).replace('-', '') + ' B.C.' : d
 			return txt
@@ -62,6 +60,7 @@ Scatter.prototype.setScales = function() {
 	this.yaxis = d3.svg.axis()
 		.scale(self.yAxisScale)
 		.tickFormat(function(d) {
+			if (self.settings.showTicks == false) return ''
 			var formatter = d3.format('.2s$')
 			var txt = '$' + formatter(Math.pow(Math.E, d))
 			return txt
@@ -90,7 +89,6 @@ Scatter.prototype.setScales = function() {
 
 				return fill
 			})
-//			.style('fill', 'white')
 	}
 }
 
@@ -123,7 +121,7 @@ Scatter.prototype.build = function() {
 					.attr('transform', 'translate(' + (this.settings.margin.left + this.settings.width/2) + ',' + (this.settings.height + this.settings.margin.top + this.settings.margin.bottom)+ ')')
 					.attr('id', 'xaxistext')
 					.attr('fill', 'white')
-					.style('visibility', self.settings.xVisibility)
+					.style('visibility', self.settings.xTitleVisibility)
 
 	
 				
@@ -138,7 +136,7 @@ Scatter.prototype.build = function() {
 					.attr('transform', 'translate(' + (20) + ',' + (this.settings.height/5*3)+ ') rotate(-90)')
 					.attr('id', 'yaxistext')
 					.attr('fill', 'white')
-					.style('visibility', self.settings.yVisibility)
+					.style('visibility', self.settings.yTitleVisibility)
 		
 	self.draw()			
 	if(self.settings.poshy != 'none') { 
@@ -149,53 +147,62 @@ Scatter.prototype.build = function() {
 // 	})
 }
 
-Scatter.prototype.draw = function() {
+Scatter.prototype.draw = function(duration) {
 	var self = this
+	var duration = duration == undefined ? 2000 : duration
 	this.imgs = this.g.selectAll("image").data(self.imageData, function(d) {return d.id});
                 
 	this.imgs.enter()
                 .append("image")
                 .call(this.imageFunction)
-                
+                .style('opacity', function() {return self.settings.imageFade == true? 0 : 1})
+
     this.imgs.exit().remove()
                 
-    this.imgs.transition().duration(500).call(this.imageFunction)
+  this.imgs.transition().duration(duration).call(this.imageFunction).each('end', function() {
+    	d3.select(this).transition().duration(duration).style('opacity', 1)
+    })
+
     
     this.text = this.g.selectAll(".text").data(self.textData, function(d) {return d.id});
                 
 	this.text.enter()
-                .append("text")
-                .call(this.textFunction)
+        .append("text")
+        .call(this.textFunction)
+		.style('opacity', function() {return self.settings.textFade == true? 0 : 1})
 
 	this.text.exit().remove()
 	
-	this.text.transition().duration(500).call(this.textFunction)
+	this.text.transition().duration(duration).call(this.textFunction)
 
 	this.text.style('visibility', self.settings.textVisibility)
+	this.text.transition().duration(duration).call(this.textFunction).each('end', function() {
+    	d3.select(this).transition().duration(duration).style('opacity', 1)
+    })
+
 	
 	this.points = this.g.selectAll('.point').data(this.data, function(d) {return d.id})
 				
+	var interval = duration/this.points[0].length
 	this.points.enter().append('svg:a')
-				.attr("xlink:href", function(d){console.log('href ', d.link);return d.link;})
+				.attr("xlink:href", function(d){return d.link;})
 				.attr('target', '_blank')
 				.attr('id', function(d) {return d.link}) 
-// 				.on('click', function() {
-// 					console.log('clicked a tag')
-// 				  	$(this).attr('target', '_blank')
-// 				})
 				.append('circle')
 				.call(this.pointFunction)
-				.transition().delay(function(d,i) {return i*100}).style('opacity', self.settings.opacity)
+				.transition().delay(function(d,i) {return i*interval}).style('opacity', self.settings.opacity)
 				
 	this.points.exit().remove()
 	this.points.style('visibility', self.settings.pointVisibility)
-	if(self.settings.move == true) this.points.transition().duration(500).call(this.pointFunction)
+	if(self.settings.move == true) this.points.transition().duration(duration).call(this.pointFunction)
 
 }
 	
 
-Scatter.prototype.update = function() {
+Scatter.prototype.update = function(duration) {
 	var self = this
+	var duration = duration == undefined ? 2000 : duration
+	console.log(duration)
 	self.data = self.settings.data
 	self.imageData = self.settings.imageData
 	self.textData = self.settings.textData
@@ -208,14 +215,16 @@ Scatter.prototype.update = function() {
 // 	self.xaxisLabels.transition().duration(500).attr('transform', 'translate(' + 0 + ',' + self.settings.plotHeight+ ')')
 
 	self.svg.selectAll('.xaxis').style('visibility', self.settings.xVisibility)
-	self.svg.selectAll('.xaxis').transition().duration(500).call(self.xaxis)
+	self.svg.selectAll('.xaxis').transition().duration(duration).call(self.xaxis)
 	
+	self.xaxisLabels.transition().duration(duration).attr('transform', 'translate(' + 0 + ',' + this.settings.height+ ')')
+
 	self.svg.selectAll('.yaxis').style('visibility', self.settings.yVisibility)
-	self.svg.selectAll('.yaxis').transition().duration(500).call(self.yaxis)
+	self.svg.selectAll('.yaxis').transition().duration(duration).call(self.yaxis)
 	
 	self.draw()
-	this.ytitle.style('visibility', self.settings.yVisibility)
-	this.xtitle.style('visibility', self.settings.xVisibility)
+	this.ytitle.style('visibility', self.settings.yTitleVisibility)
+	this.xtitle.style('visibility', self.settings.xTitleVisibility)
 }
 
 
