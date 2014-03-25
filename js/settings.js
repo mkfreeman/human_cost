@@ -12,25 +12,27 @@ var defaults = {
 		container:'container',
 		chartNames:['scatter'],
 		state:0,
-		steps:17,
+		steps:18,
 		metric:'destination',
 		text:{
 			labels:{
 				30:'The compensation for a US Military death is $100,000', 	
-				52:'Human trafficking sells children for as little as $2', 	
+				52:'In cases of human trafficking, children are sold for as little as $2', 	
 			},
 		},
 		delays:{	
 			1:6000,
+			13:10000,
+			15:10000,
 		},
 		imgHeight:150, 
 		imgWidth:150,
 		scatter:{
 			id:'scatter',
 			type:'scatter',
-			width:800, 
+			width:$(window).width()*2/3, 
 			colors:d3.scale.category10(),
-			height:500, 
+			height:$(window).height()*2/3, 
 			margin:{
 				left:100, 
 				right:50, 
@@ -40,7 +42,7 @@ var defaults = {
 			radius:10,
 			opacity:.5,
 			xtitle:'Time', 
-			ytitle:'Cost', 
+			ytitle:'Price', 
 			poshy:true, 
 			pointTip:true,
 			tipContent:function(a,b) {
@@ -71,7 +73,6 @@ var defaults = {
 			
 			},
 			title:'In 2011, nearly 5,500 human trafficking cases were detected globally',
-			location_id:102,
 			getProjection:function(controller) {
 				var self = controller
 				var scale = self.settings.getScale(self);

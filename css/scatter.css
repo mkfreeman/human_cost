@@ -27,3 +27,8 @@
 .female {
 	color:'green'
 }
+
+#scatter {
+	float:left;
+	margin-left:30px;
+}

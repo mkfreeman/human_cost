@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'e804';
-  src: url('../font/e804.eot?58113290');
-  src: url('../font/e804.eot?58113290#iefix') format('embedded-opentype'),
-       url('../font/e804.woff?58113290') format('woff'),
-       url('../font/e804.ttf?58113290') format('truetype'),
-       url('../font/e804.svg?58113290#e804') format('svg');
+  src: url('../font/e804.eot?45066758');
+  src: url('../font/e804.eot?45066758#iefix') format('embedded-opentype'),
+       url('../font/e804.woff?45066758') format('woff'),
+       url('../font/e804.ttf?45066758') format('truetype'),
+       url('../font/e804.svg?45066758#e804') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'e804';
-    src: url('../font/e804.svg?58113290#e804') format('svg');
+    src: url('../font/e804.svg?45066758#e804') format('svg');
   }
 }
 */
@@ -50,7 +50,6 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
-.icon-left-open:before { content: '\e800'; } /* '' */
-.icon-right-open:before { content: '\e801'; } /* '' */
 .icon-play:before { content: '\e802'; } /* '' */
-.icon-pause:before { content: '\e803'; } /* '' */
+.icon-pause:before { content: '\e800'; } /* '' */
+.icon-ccw:before { content: '\e804'; } /* '' */

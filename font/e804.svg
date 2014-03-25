@@ -6,10 +6,9 @@
 <font id="e804" horiz-adv-x="1000" >
 <font-face font-family="e804" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
 <missing-glyph horiz-adv-x="1000" />
-<glyph glyph-name="left-open" unicode="&#xe800;" d="m414-28l-364 364q-20 20-20 50t20 51l364 363q21 20 51 20t50-20l42-42q21-21 21-51t-21-50l-271-271l271-271q21-21 21-51t-21-50l-42-42q-21-20-50-20t-51 20z" horiz-adv-x="642.9" />
-<glyph glyph-name="right-open" unicode="&#xe801;" d="m613 386q0-29-20-51l-364-363q-21-21-50-21t-51 21l-42 42q-21 21-21 50q0 30 21 51l271 271l-271 270q-21 22-21 51q0 30 21 50l42 42q20 21 51 21t50-21l364-363q20-21 20-50z" horiz-adv-x="642.9" />
 <glyph glyph-name="play" unicode="&#xe802;" d="m772 333l-741-412q-13-7-22-2t-9 20v822q0 14 9 20t22-2l741-412q13-7 13-17t-13-17z" horiz-adv-x="785.7" />
-<glyph glyph-name="pause" unicode="&#xe803;" d="m857 743v-786q0-14-10-25t-26-11h-285q-15 0-25 11t-11 25v786q0 14 11 25t25 11h285q15 0 26-11t10-25z m-500 0v-786q0-14-10-25t-26-11h-285q-15 0-25 11t-11 25v786q0 14 11 25t25 11h285q15 0 26-11t10-25z" horiz-adv-x="857.1" />
+<glyph glyph-name="pause" unicode="&#xe800;" d="m857 743v-786q0-14-10-25t-26-11h-285q-15 0-25 11t-11 25v786q0 14 11 25t25 11h285q15 0 26-11t10-25z m-500 0v-786q0-14-10-25t-26-11h-285q-15 0-25 11t-11 25v786q0 14 11 25t25 11h285q15 0 26-11t10-25z" horiz-adv-x="857.1" />
+<glyph glyph-name="ccw" unicode="&#xe804;" d="m532 736q170 0 289-120t119-290t-119-290t-289-120q-142 0-252 88l70 74q84-60 182-60q126 0 216 90t90 218t-90 218t-216 90q-124 0-214-87t-92-211l142 0l-184-204l-184 204l124 0q2 166 122 283t286 117z" horiz-adv-x="940" />
 </font>
 </defs>
 </svg>

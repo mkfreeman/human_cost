@@ -110,7 +110,8 @@ Map.prototype.build = function(){
 		.attr('overflow', 'hidden')
 		.append("g")
 		.attr("transform", "translate(" + (self.settings.chartWidth / 2) + "," + (self.settings.chartHeight / 2) + ")");
-			
+	
+	$('#' + self.settings.id + '-svg').hide()		
 	self.zoomed = d3.behavior.zoom()
 		.scaleExtent([self.settings.minZoom,self.settings.maxZoom])
 		.scale(self.settings.scale)
@@ -388,6 +389,7 @@ Map.prototype.update = function(control, build){
 	}
 	var build = build == undefined? false: build
 	var control = control == undefined ? true: control
+	console.log('set map title as ', self.settings.title)
 	d3.select('#' + self.settings.id + '-titletext').text(self.settings.title)
 	self.data = self.settings.data == undefined ? {}: self.settings.data;
 	self.getSizes()
@@ -456,9 +458,22 @@ Map.prototype.update = function(control, build){
 	$('[' + self.settings.id + '-density-id~="' + self.settings.location_id + '"]').css("stroke",'black');
 	// self.gray()
 // 	self.resize()
-	d3.select('#' + self.settings.id + '-svg').transition().duration(2000)
-				.style('width', self.settings.width+ 'px')
-				.style('height', self.settings.height + 'px')
+	if(build == true) {
+		setTimeout(function() {
+			$("#" + self.settings.id + '-svg').fadeIn(3000, function() {
+				
+			})
+		}, 1000)
+	}
+	else {
+		d3.select('#' + self.settings.id).transition().duration(2000)
+			.style('width', self.settings.width+ 'px')
+			.style('height', self.settings.height + 'px')
+			
+		d3.select('#' + self.settings.id + '-svg').transition().duration(2000)
+			.style('width', self.settings.width+ 'px')
+			.style('height', self.settings.height + 'px')
+	}
 }
 
 Map.prototype.zoom = function(direction, loc_id){

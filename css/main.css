@@ -30,6 +30,9 @@ body {
 	margin-right:10px;
 }
 
+#bottom {
+	padding:5px;
+}
 
 .axis path, .axis line {
   fill: none;
@@ -67,7 +70,7 @@ body {
 	font-size:30px;
 }
 
-.icon-left-open, .icon-right-open, .icon-play, .icon-pause {
+.icon-left-open, .icon-right-open, .icon-play, .icon-pause, .icon-ccw {
 	cursor:pointer;
 }
 
@@ -78,10 +81,38 @@ body {
 }
 
 #map-svg {
-	
+	float:left;
+}
+
+#map {
+	position:absolute;
+	float:left;
+	top:200px;
+}
+
+#map-divtitle {
 }
 .icon-img:hover {
 	opacity:1 !important;
 	border:2px solid !important;
 	border-color:white;
+}
+
+#twitter {
+	display:inline-block;
+	float:right;
+	padding-right:15px;
+}
+
+#data {
+	display:inline-block;
+	float:left;
+	padding-left:20px;
+	font-size:11px;
+}
+
+#conclusion {
+position: absolute;
+top: 30%;
+width: 100%;
 }

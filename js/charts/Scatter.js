@@ -239,7 +239,7 @@ Scatter.prototype.addTip = function(klass) {
 					hideTimeout: 0, 
 					alignX: 'center', 
 					alignY: 'inner-bottom', 
-					className: 'tip-ihme',
+					className: 'tip',
 					offsetY: 10,
 					content: function(){
 						return self.settings.tipContent(this.__data__, klass)
