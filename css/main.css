@@ -41,9 +41,11 @@ body {
 }
 
 .axis text {
-  font: 10px sans-serif;
-  stroke:white;
+  font-size: 15px;
+/*   stroke:white; */
+  fill:white;
   font-weight:100;
+  font-family:helvetica;
 }
 
 

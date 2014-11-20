@@ -187,8 +187,8 @@ Main.prototype.prepData = function(chart) {
 					var detail = d.detail 
 					settings[self.settings.id][chart].textFade = false
 					settings[self.settings.id][chart].textData.push({id:d.id + 'a', x:x, y:y, detail:detail, text:'The price of life varies greatly for'})
-					settings[self.settings.id][chart].textData.push({id:'male', icon:d.icon, x:500, y:y, colorize:true, detail:detail, text:'males:'})
-					settings[self.settings.id][chart].imageData.push({id:d.id, x:850, y:y, detail:detail, text:'There are many more examples of <b>male</b>',height:self.settings.imgHeight, width:self.settings.imgWidth, href:'img/' + d.icon + '.png'})
+					settings[self.settings.id][chart].textData.push({id:'male', icon:d.icon, x:730, y:y, colorize:true, detail:detail, text:'males:'})
+					settings[self.settings.id][chart].imageData.push({id:d.id, x:1050, y:y, detail:detail, text:'There are many more examples of <b>male</b>',height:self.settings.imgHeight, width:self.settings.imgWidth, href:'img/' + d.icon + '.png'})
 				}
 			})
 			break
@@ -242,7 +242,7 @@ Main.prototype.prepData = function(chart) {
 				settings[self.settings.id][chart].data.push({id:d.id,  date:d.date,icon:d.icon, x:x, y:y, detail:detail, link:d.link})
 			})
 			settings[self.settings.id][chart].textData[1].icon = 'baby'
-			settings[self.settings.id][chart].textData[1].text = 'and infants:'
+			settings[self.settings.id][chart].textData[1].text = 'infants:'
 			settings[self.settings.id][chart].imageData[0].href = 'img/baby.png'
 
 			break

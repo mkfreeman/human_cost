@@ -56,7 +56,7 @@ Scatter.prototype.setScales = function() {
 			var txt = d < 0 ? String(d).replace('-', '') + ' B.C.' : d
 			return txt
 		})
-		
+		.ticks(5)
 	this.yaxis = d3.svg.axis()
 		.scale(self.yAxisScale)
 		.tickFormat(function(d) {
@@ -66,6 +66,7 @@ Scatter.prototype.setScales = function() {
 			return txt
 		})
 		.orient('left')	
+		.ticks(5)
 		
 	this.imageFunction = function(img) {
 		img.attr("xlink:href", function(d) {return d.href})
